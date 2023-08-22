@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CursorRandomizer", "CursorRandomizer\CursorRandomizer.csproj", "{BE3ACAE6-4C8F-45F0-9D6F-0C2944BAE469}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE3ACAE6-4C8F-45F0-9D6F-0C2944BAE469}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE3ACAE6-4C8F-45F0-9D6F-0C2944BAE469}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE3ACAE6-4C8F-45F0-9D6F-0C2944BAE469}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE3ACAE6-4C8F-45F0-9D6F-0C2944BAE469}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {97CC8170-5C8D-4FB1-9D73-D07D0F2C51B8}
+	EndGlobalSection
+EndGlobal
