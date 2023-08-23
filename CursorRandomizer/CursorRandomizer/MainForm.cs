@@ -108,12 +108,17 @@ namespace CursorRandomizer
                 Environment.Exit(160);
             }
 
+            // Get full path to bypass windows startup problem
+            string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+            string settingsPath = Path.Combine(appPath, "settings.ini");
+            string profilesPath = Path.Combine(appPath, "profiles.json");
+
             // Initialize Settings
             FileIniDataParser iniParser = new FileIniDataParser();
             try
             {
                 // Read Settings from settings.ini
-                Settings = iniParser.ReadFile("settings.ini", Encoding.UTF8);
+                Settings = iniParser.ReadFile(settingsPath, Encoding.UTF8);
             }
             catch (ParsingException)
             {
@@ -121,7 +126,7 @@ namespace CursorRandomizer
                 Settings = new IniData();
                 Settings["Profile"]["currentProfile"] = "Default";
                 Settings["Randomization"]["randomizeWhenLogin"] = "false";
-                iniParser.WriteFile("settings.ini", Settings, Encoding.UTF8);
+                iniParser.WriteFile(settingsPath, Settings, Encoding.UTF8);
 
                 // Clean up randomization registry key
                 CleanUp();
@@ -134,7 +139,7 @@ namespace CursorRandomizer
             try
             {
                 // Read Profiles from profiles.json
-                using (StreamReader inputFile = new StreamReader("profiles.json", Encoding.UTF8))
+                using (StreamReader inputFile = new StreamReader(profilesPath, Encoding.UTF8))
                 {
                     Profiles = JsonSerializer.Deserialize<List<Profile>>(inputFile.ReadLine());
                 }
@@ -142,7 +147,7 @@ namespace CursorRandomizer
             catch (Exception)
             {
                 // File "profiles.json" not found or corrupted, create a blank one
-                using (StreamWriter outputFile = new StreamWriter("profiles.json", false, Encoding.UTF8))
+                using (StreamWriter outputFile = new StreamWriter(profilesPath, false, Encoding.UTF8))
                 {
                     Profiles = new List<Profile>();
                     outputFile.WriteLine(JsonSerializer.Serialize<List<Profile>>(Profiles));
@@ -153,6 +158,7 @@ namespace CursorRandomizer
             }
 
             Radomize();
+            iniParser.WriteFile(settingsPath, Settings, Encoding.UTF8);
             Environment.Exit(0);
         }
 
@@ -310,15 +316,32 @@ namespace CursorRandomizer
 
                     for (int i = 0; i < 17; i++)
                     {
-                        // In windows 10 default cursor scheme, crosshair and ibeam aren't set to any file
-                        // The files in Profile.DefaultCursors are for display
-                        if ((i == 4 || i == 5) && profile.Cursors[i] == Profile.DefaultCursors[i])
+                        if (profile.Cursors[i] == Profile.DefaultCursors[i])
                         {
-                            key.SetValue(names[i], "");
+                            // In windows 10 default cursor scheme, crosshair and ibeam aren't set to any file
+                            // The files in Profile.DefaultCursors are for display
+                            if (i == 4 || i == 5)
+                            {
+                                key.SetValue(names[i], "");
+                            }
+                            else
+                            {
+                                key.SetValue(names[i], profile.Cursors[i]);
+                            }
                         }
                         else
                         {
-                            key.SetValue(names[i], profile.Cursors[i]);
+                            // Is absolute path
+                            if (profile.Cursors[i].Contains(':'))
+                            {
+                                key.SetValue(names[i], profile.Cursors[i]);
+                            }
+                            else
+                            {
+                                // Get full path to bypass windows startup problem
+                                string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+                                key.SetValue(names[i], Path.Combine(appPath, profile.Cursors[i]));
+                            }
                         }
                     }
                 }
@@ -326,8 +349,6 @@ namespace CursorRandomizer
 
             // Refresh user cursor
             SystemParametersInfo(0x0057, 0, 0, 0);
-
-            Save();
         }
 
         private void Save()
@@ -559,6 +580,8 @@ namespace CursorRandomizer
 
             // Change profile to selected profile
             ProfileComboBox.SelectedItem = Settings["Profile"]["currentProfile"];
+
+            Save();
         }
         #endregion
 
@@ -581,6 +604,7 @@ namespace CursorRandomizer
             }
 
             ApplyProfile(profile);
+            Save();
         }
 
         private void SaveButton_Click(object sender, EventArgs e)

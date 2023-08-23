@@ -41,7 +41,7 @@
             "Crosshair",
             "Text select",
             "Pen",
-            "Not allow",
+            "Not allowed",
             "NS resize",
             "EW resize",
             "NWSE resize",
